@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Emoji App</title>
+    <style>
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .message-box {
+            margin-top: 20px;
+        }
+
+        #emoji-picker {
+            
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 5px;
+        }
+
+        #emoji-upload-popup {
+             margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+            position: absolute;
+            top: 130px;
+            left: 0;
+            z-index: 1000;
+            border-radius: 5px;
+        }
+
+        #emoji-list img {
+            margin: 5px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="message-box">
+            <div id="message" contenteditable="true" placeholder="Type your message..."></div>
+            <button id="send-message">Send</button>
+            <button id="emoji-button">😀</button>
+        </div>
+        
+        <div id="emoji-picker" class="hidden">
+            <div id="emoji-list"></div>
+            <button id="add-emoji-button">Add Emoji</button>
+        </div>
+        <div id="emoji-upload-popup" class="hidden">
+            <input type="text" id="emoji-name" placeholder="Emoji Name">
+            <input type="file" id="emoji-file">
+            <button id="upload-emoji">Upload</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            //getting html elements by ID
+            const emojiButton = document.getElementById('emoji-button');
+            const emojiPicker = document.getElementById('emoji-picker');
+            const addEmojiButton = document.getElementById('add-emoji-button');
+            const emojiUploadPopup = document.getElementById('emoji-upload-popup');
+            const uploadEmojiButton = document.getElementById('upload-emoji');
+            const emojiList = document.getElementById('emoji-list');
+
+            // Show emoji picker
+            emojiButton.addEventListener('click', () => {
+                emojiPicker.classList.toggle('hidden');
+                fetchEmojis(); // Fetch emojis when picker 
+            });
+
+            // Show emoji upload popup
+            addEmojiButton.addEventListener('click', () => {
+                emojiUploadPopup.classList.toggle('hidden');
+            });
+
+            // Upload emoji
+            uploadEmojiButton.addEventListener('click', () => {
+                const emojiName = document.getElementById('emoji-name').value;
+                const emojiFile = document.getElementById('emoji-file').files[0];
+
+                if (!emojiName || !emojiFile) {
+                    alert('Please provide both name and file for the emoji.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('emojiImage', emojiFile);
+                formData.append('name', emojiName);
+
+                fetch('http://localhost:3000/api/emojis/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Uploaded emoji:', data); // Debugging line
+                    fetchEmojis(); // Refresh emoji list
+                    emojiUploadPopup.classList.add('hidden');
+                    document.getElementById('emoji-name').value = '';
+                    document.getElementById('emoji-file').value = '';
+                })
+                .catch(error => console.error('Error uploading emoji:', error));
+            });
+//fetching emoji
+            function fetchEmojis() {
+                fetch('http://localhost:3000/api/emojis')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Fetched emojis:', data); // Debugging line
+                        emojiList.innerHTML = ''; // Clear existing emojis
+                        data.forEach(emoji => {
+                            console.log('Adding emoji:', emoji); // Debugging line
+                            const img = document.createElement('img');
+                            img.src = emoji.imageUrl;
+                            img.alt = emoji.name;
+                            img.title = emoji.name;
+                            img.addEventListener('click', () => {
+    const messageBox = document.getElementById('message');
+    const emojiImg = document.createElement('img');
+    emojiImg.src = emoji.imageUrl;
+    emojiImg.style.width = '24px'; // Adjust size as needed
+    emojiImg.style.height = '24px';
+    emojiImg.style.verticalAlign = 'middle'; // Align image with text
+    
+    // Insert the emoji image into the contenteditable div
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(messageBox);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    range.insertNode(emojiImg);
+
+    emojiPicker.classList.add('hidden'); // Hide emoji picker after selection
+});
+
+                            emojiList.appendChild(img);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching emojis:', error));
+            }
+        });
+    </script>
+</body>
+</html>

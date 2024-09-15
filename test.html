@@ -1,0 +1,74 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Picker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css">
+    <style>
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #emoji-picker {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            z-index: 1000;
+            display: none; /* Initially hidden */
+        }
+        #message {
+            width: 100%;
+            height: 100px;
+        }
+        #emoji-button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <textarea id="message" placeholder="Type your message..."></textarea>
+        <button id="emoji-button">😀</button>
+        <div id="emoji-picker"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emojiButton = document.getElementById('emoji-button');
+            const emojiPicker = document.getElementById('emoji-picker');
+            const messageBox = document.getElementById('message');
+
+            // Initialize Emoji Picker
+            const picker = new EmojiMart.Picker({
+                onEmojiSelect: (emoji) => {
+                    messageBox.value += emoji.native; // Append selected emoji
+                    // Keep the picker open or show it again if needed
+                }
+            });
+
+            emojiPicker.appendChild(picker);
+
+            // Toggle emoji picker
+            emojiButton.addEventListener('click', () => {
+                const isVisible = emojiPicker.style.display === 'block';
+                emojiPicker.style.display = isVisible ? 'none' : 'block';
+            });
+
+            // Optional: Keep the picker open if you want to add more emojis
+            emojiPicker.addEventListener('click', (event) => {
+                // Prevent closing if clicking inside the picker
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!emojiPicker.contains(event.target) && event.target !== emojiButton) {
+                    emojiPicker.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
